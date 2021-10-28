@@ -13,7 +13,6 @@ import SwiftUI
 private let reloadIndicatorId = "reloadIndicator"
 private let scrollTopId = "scrollTop"
 
-@available(iOS 14, *)
 public struct RefreshableScrollView<Content: View, RefreshView: View>: View {
     
     public typealias OnRefresh = (@escaping () -> Void) -> Void
@@ -108,7 +107,6 @@ public struct RefreshableScrollView<Content: View, RefreshView: View>: View {
     }
 }
 
-@available(iOS 14, *)
 extension RefreshableScrollView {
     public init(refreshCallback: @escaping OnRefresh,
                 startRefreshingOffset: CGFloat = 64,
@@ -136,7 +134,6 @@ extension Double {
     }
 }
 
-@available(iOS 14, *)
 internal struct TestView: View {
     class ViewModel: ObservableObject {
         var workItem: DispatchWorkItem?
@@ -179,7 +176,6 @@ internal struct TestView: View {
     }
 }
 
-@available(iOS 14, *)
 internal struct TestView_Previews: PreviewProvider {
     static var previews: some View {
         TestView()

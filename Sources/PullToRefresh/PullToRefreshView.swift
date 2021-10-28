@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 /// A useful view for displaying a common pull-to-refresh indicator. Can be customised with varying indicator and refreshing views.
-@available(iOS 13, *)
 public struct PullToRefreshView<IndicatorView: View, RefreshingView: View>: View {
     @Environment(\.pullToRefreshState) var refreshState: PullToRefreshState
     var indicatorView: IndicatorView

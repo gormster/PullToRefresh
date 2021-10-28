@@ -10,7 +10,6 @@ import SwiftUI
 // MARK: - Default views (iOS 14)
 
 // This is done to force Swift to resolve these `some View` types into concrete types
-@available(iOS 14.0, *)
 public protocol PullToRefreshDefaultViews {
     associatedtype DefaultIndicatorView: View
     associatedtype DefaultRefreshingView: View
@@ -19,7 +18,6 @@ public protocol PullToRefreshDefaultViews {
     static var defaultRefreshingView: DefaultRefreshingView { get }
 }
 
-@available(iOS 14.0, *)
 public struct PullToRefreshDefaults: PullToRefreshDefaultViews {
     public static var defaultIndicatorView: some View {
         Image(systemName: "arrow.clockwise")
@@ -32,7 +30,6 @@ public struct PullToRefreshDefaults: PullToRefreshDefaultViews {
 
 // MARK: - Default initialiser for PTR view
 
-@available(iOS 14.0, *)
 public extension PullToRefreshView
 where IndicatorView == PullToRefreshDefaults.DefaultIndicatorView,
       RefreshingView == PullToRefreshDefaults.DefaultRefreshingView {
