@@ -65,7 +65,9 @@ If you want to apply pull-to-refresh to a different type of view, you can use th
 
 ```swift
 List(items) { item
-    Color.clear.pullToRefreshContent()
+    if item.isFirst {
+        Color.clear.pullToRefreshContent()
+    }
     
     YourListItemView(item)
 }
