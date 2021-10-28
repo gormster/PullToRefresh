@@ -99,11 +99,11 @@ internal struct TestView: View {
             VStack {
                 ForEach(0 ..< 40) { i in
                     let hue = ((Double(i) / 10.0) * .phi )
+                    let color = Color(hue: hue.fractionalPart, saturation: 0.8, brightness: 1.0, opacity: 0.3)
                     Text("Item #\(i)")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(RoundedRectangle(cornerRadius: 5)
-                                        .fill(Color(hue: hue.fractionalPart, saturation: 0.8, brightness: 1.0, opacity: 0.3)))
+                        .background(RoundedRectangle(cornerRadius: 5).fill(color))
                         .padding()
                 }
             }

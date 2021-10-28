@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// These preference/environment keys are used throughout the package.
+
 struct TopAnchorPreference: PreferenceKey {
     static var defaultValue: Anchor<CGPoint>? = nil
     
