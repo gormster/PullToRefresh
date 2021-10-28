@@ -10,105 +10,41 @@ import SwiftUI
 
 // MARK: - RefreshableScrollView
 
-private let reloadIndicatorId = "reloadIndicator"
-private let scrollTopId = "scrollTop"
-
 public struct RefreshableScrollView<Content: View, RefreshView: View>: View {
-    
-    public typealias OnRefresh = (@escaping () -> Void) -> Void
-    
-    var refreshCallback: OnRefresh
+    var refreshCallback: PullToRefreshCallback
     var refreshView: RefreshView
-    var startRefreshingOffset: CGFloat = 64
+    var startRefreshingOffset: CGFloat
+    var completionDelay: TimeInterval
     var content: Content
     
     @State private var refreshState: PullToRefreshState = .waiting
     
-    @Namespace private var reloadNamespace
-    
-    public init(refreshCallback: @escaping OnRefresh,
+    public init(refreshCallback: @escaping PullToRefreshCallback,
                 refreshView: RefreshView,
                 startRefreshingOffset: CGFloat = 64,
+                completionDelay: TimeInterval = 1.0,
                 @ViewBuilder content: () -> Content) {
         self.refreshCallback = refreshCallback
         self.refreshView = refreshView
         self.startRefreshingOffset = startRefreshingOffset
+        self.completionDelay = completionDelay
         self.content = content()
     }
     
     public var body: some View {
-        ZStack(alignment: .top) {
-            refreshView
-                .environment(\.pullToRefreshState, refreshState)
-                .frame(height: startRefreshingOffset)
-                .matchedGeometryEffect(id: reloadIndicatorId,
-                                       in: reloadNamespace,
-                                       properties: .position,
-                                       anchor: .bottom,
-                                       isSource: refreshState == .refreshing)
-                .matchedGeometryEffect(id: scrollTopId,
-                                       in: reloadNamespace,
-                                       properties: .position,
-                                       anchor: .bottom,
-                                       isSource: false)
-        
-            ScrollView {
-                content
-                    .anchorPreference(key: TopAnchorPreference.self, value: .top) { $0 }
-                    .matchedGeometryEffect(id: reloadIndicatorId,
-                                           in: reloadNamespace,
-                                           properties: .position,
-                                           anchor: .top,
-                                           isSource: false)
-                    .matchedGeometryEffect(id: scrollTopId,
-                                           in: reloadNamespace,
-                                           properties: .position,
-                                           anchor: .top,
-                                           isSource: (refreshState == .waiting || refreshState == .complete))
-            }
+        ScrollView {
+            content.pullToRefreshContent()
         }
-        .overlayPreferenceValue(TopAnchorPreference.self) { topAnchor in
-            if let topAnchor = topAnchor {
-                anchorOverlay(topAnchor: topAnchor)
-            }
-        }
-        .onPreferenceChange(PullToRefreshStatePreference.self, perform: stateChanged)
-        .clipped()
-    }
-    
-    private func anchorOverlay(topAnchor: Anchor<CGPoint>) -> some View {
-        GeometryReader { geometryProxy in
-            if geometryProxy[topAnchor].y > startRefreshingOffset {
-                Color.clear.preference(key: PullToRefreshStatePreference.self, value: .primed)
-            } else {
-                Color.clear.preference(key: PullToRefreshStatePreference.self, value: .refreshing)
-            }
-        }
-    }
-    
-    private func stateChanged(newValue: PullToRefreshState) {
-        switch (refreshState, newValue) {
-        case (.waiting, .primed):
-            refreshState = .primed
-        case (.primed, .refreshing):
-            refreshState = .refreshing
-            refreshCallback {
-                withAnimation(.default) {
-                    refreshState = .complete
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    refreshState = .waiting
-                }
-            }
-        default:
-            break
-        }
+        .pullToRefreshContainer(refreshState: $refreshState,
+                                refreshView: refreshView,
+                                startRefreshingOffset: startRefreshingOffset,
+                                completionDelay: completionDelay,
+                                refreshCallback: refreshCallback)
     }
 }
 
 extension RefreshableScrollView {
-    public init(refreshCallback: @escaping OnRefresh,
+    public init(refreshCallback: @escaping PullToRefreshCallback,
                 startRefreshingOffset: CGFloat = 64,
                 @ViewBuilder content: () -> Content)
     where RefreshView == PullToRefreshView<PullToRefreshDefaults.DefaultIndicatorView,
@@ -159,7 +95,7 @@ internal struct TestView: View {
     @StateObject var viewModel = ViewModel()
     
     var body: some View {
-        RefreshableScrollView(refreshCallback: viewModel.startRefresh) {
+        RefreshableScrollView(refreshCallback: viewModel.startRefresh(completion:)) {
             VStack {
                 ForEach(0 ..< 40) { i in
                     let hue = ((Double(i) / 10.0) * .phi )
@@ -171,8 +107,9 @@ internal struct TestView: View {
                         .padding()
                 }
             }
-        }.clipped()
-            .overlay(Text(viewModel.debugText))
+        }
+        .clipped()
+        .overlay(Text(viewModel.debugText))
     }
 }
 

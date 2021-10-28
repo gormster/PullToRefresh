@@ -37,3 +37,16 @@ public extension EnvironmentValues {
         set { self[PullToRefreshStateEnvironmentKey.self] = newValue }
     }
 }
+
+struct PullToRefreshNamespaceEnvironmentKey: EnvironmentKey {
+    static let defaultValue: Namespace.ID? = nil
+}
+
+public extension EnvironmentValues {
+    var pullToRefreshNamespace: Namespace.ID? {
+        get { self[PullToRefreshNamespaceEnvironmentKey.self] }
+        set { self[PullToRefreshNamespaceEnvironmentKey.self] = newValue }
+    }
+}
+
+public typealias PullToRefreshCallback = (@escaping () -> Void) -> Void
