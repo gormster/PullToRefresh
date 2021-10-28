@@ -38,3 +38,19 @@ where IndicatorView == PullToRefreshDefaults.DefaultIndicatorView,
                   refreshingView: PullToRefreshDefaults.defaultRefreshingView)
     }
 }
+
+public extension PullToRefreshView
+where IndicatorView == PullToRefreshDefaults.DefaultIndicatorView {
+    init(refreshingView: RefreshingView) {
+        self.init(indicatorView: PullToRefreshDefaults.defaultIndicatorView,
+                  refreshingView: refreshingView)
+    }
+}
+
+public extension PullToRefreshView
+where RefreshingView == PullToRefreshDefaults.DefaultRefreshingView {
+    init(indicatorView: IndicatorView) {
+        self.init(indicatorView: indicatorView,
+                  refreshingView: PullToRefreshDefaults.defaultRefreshingView)
+    }
+}
