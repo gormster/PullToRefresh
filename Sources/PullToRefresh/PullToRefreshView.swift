@@ -10,9 +10,10 @@ import SwiftUI
 
 /// A useful view for displaying a common pull-to-refresh indicator. Can be customised with varying indicator and refreshing views.
 public struct PullToRefreshView<IndicatorView: View, RefreshingView: View>: View {
-    @Environment(\.pullToRefreshState) var refreshState: PullToRefreshState
     var indicatorView: IndicatorView
     var refreshingView: RefreshingView
+    
+    @Environment(\.pullToRefreshState) private var refreshState
     
     public var body: some View {
         ZStack {
