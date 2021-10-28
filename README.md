@@ -2,6 +2,10 @@
 
 This package adds far more flexible pull-to-refresh functionality to SwiftUI, for iOS 14 and 15.
 
+<p align="center">
+    <img alt="RefreshableScrollView" src="https://user-images.githubusercontent.com/152158/139188144-c17025f7-64db-4b03-bb79-16fda9b2f846.gif" />
+</p>
+
 * Usable in any view through a pair of view modifiers
 * Convenient `RefreshableScrollView` container
 * Allows full customisation of the refreshing view
