@@ -64,12 +64,13 @@ let refreshView = PullToRefreshView(indicatorView: Image(systemName: "arrow.cloc
 If you want to apply pull-to-refresh to a different type of view, you can use the view modifiers `pullToRefreshContent()` and `pullToRefreshContainer`. The former goes on the content (as in the thing that the user drags with their finger) and the latter goes on the container (as in the thing that stays still when the user drags the content). If your container takes multiple views, apply the content modifier to the one at the top. 
 
 ```swift
-List(items) { item
-    if item.isFirst {
-        Color.clear.pullToRefreshContent()
-    }
+MyCustomScrollView {
+    Color.clear.pullToRefreshContent()
     
-    YourListItemView(item)
+    ForEach(items) { item in
+        YourListItemView(item)
+    }
 }
 .pullToRefreshContainer { viewModel.startRefresh(completion: $0) }
+.clipped()
 ```
