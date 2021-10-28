@@ -10,6 +10,9 @@ import SwiftUI
 
 // MARK: - RefreshableScrollView
 
+private let reloadIndicatorId = "reloadIndicator"
+private let scrollTopId = "scrollTop"
+
 @available(iOS 14, *)
 public struct RefreshableScrollView<Content: View, RefreshView: View>: View {
     
@@ -39,14 +42,30 @@ public struct RefreshableScrollView<Content: View, RefreshView: View>: View {
             refreshView
                 .environment(\.pullToRefreshState, refreshState)
                 .frame(height: startRefreshingOffset)
-                .matchedGeometryEffect(id: "reloadIndicator", in: reloadNamespace, properties: .position, anchor: .bottom, isSource: refreshState == .refreshing)
-                .matchedGeometryEffect(id: "scrollTop", in: reloadNamespace, properties: .position, anchor: .bottom, isSource: false)
+                .matchedGeometryEffect(id: reloadIndicatorId,
+                                       in: reloadNamespace,
+                                       properties: .position,
+                                       anchor: .bottom,
+                                       isSource: refreshState == .refreshing)
+                .matchedGeometryEffect(id: scrollTopId,
+                                       in: reloadNamespace,
+                                       properties: .position,
+                                       anchor: .bottom,
+                                       isSource: false)
         
             ScrollView {
                 content
                     .anchorPreference(key: TopAnchorPreference.self, value: .top) { $0 }
-                    .matchedGeometryEffect(id: "reloadIndicator", in: reloadNamespace, properties: .position, anchor: .top, isSource: false)
-                    .matchedGeometryEffect(id: "scrollTop", in: reloadNamespace, properties: .position, anchor: .top, isSource: (refreshState == .waiting || refreshState == .complete))
+                    .matchedGeometryEffect(id: reloadIndicatorId,
+                                           in: reloadNamespace,
+                                           properties: .position,
+                                           anchor: .top,
+                                           isSource: false)
+                    .matchedGeometryEffect(id: scrollTopId,
+                                           in: reloadNamespace,
+                                           properties: .position,
+                                           anchor: .top,
+                                           isSource: (refreshState == .waiting || refreshState == .complete))
             }
         }
         .overlayPreferenceValue(TopAnchorPreference.self) { topAnchor in
