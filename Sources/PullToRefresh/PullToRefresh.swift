@@ -29,26 +29,15 @@ struct PullToRefreshStatePreference: PreferenceKey {
     static var defaultValue: PullToRefreshState = .waiting
 }
 
-
-// MARK: - PTR View
-
-@available(iOS 13, *)
-public struct PullToRefreshView<IndicatorView: View, RefreshingView: View>: View {
-    var refreshState: PullToRefreshState
-    var indicatorView: IndicatorView
-    var refreshingView: RefreshingView
-    
-    public var body: some View {
-        ZStack {
-            refreshingView
-                .scaleEffect(refreshState == .refreshing ? 1.0 : 0.0, anchor: .center)
-            
-            indicatorView
-                .rotationEffect((refreshState == .waiting || refreshState == .complete) ? .zero : .degrees(360))
-                .scaleEffect((refreshState == .refreshing || refreshState == .complete) ? 0.0 : 1.0, anchor: .center)
-        }
-        .animation(.easeInOut(duration: 0.3), value: refreshState)
-    }
+@available(iOS 13.0, *)
+struct PullToRefreshStateEnvironmentKey: EnvironmentKey {
+    static let defaultValue: PullToRefreshState = .waiting
 }
 
-
+@available(iOS 13.0, *)
+public extension EnvironmentValues {
+    var pullToRefreshState: PullToRefreshState {
+        get { self[PullToRefreshStateEnvironmentKey.self] }
+        set { self[PullToRefreshStateEnvironmentKey.self] = newValue }
+    }
+}

@@ -29,3 +29,15 @@ public struct PullToRefreshDefaults: PullToRefreshDefaultViews {
         ProgressView().progressViewStyle(.circular)
     }
 }
+
+// MARK: - Default initialiser for PTR view
+
+@available(iOS 14.0, *)
+public extension PullToRefreshView
+where IndicatorView == PullToRefreshDefaults.DefaultIndicatorView,
+      RefreshingView == PullToRefreshDefaults.DefaultRefreshingView {
+    init() {
+        self.init(indicatorView: PullToRefreshDefaults.defaultIndicatorView,
+                  refreshingView: PullToRefreshDefaults.defaultRefreshingView)
+    }
+}

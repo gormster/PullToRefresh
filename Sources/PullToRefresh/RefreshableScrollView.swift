@@ -11,13 +11,12 @@ import SwiftUI
 // MARK: - RefreshableScrollView
 
 @available(iOS 14, *)
-public struct RefreshableScrollView<Content: View, IndicatorView: View, RefreshingView: View>: View {
+public struct RefreshableScrollView<Content: View, RefreshView: View>: View {
     
     public typealias OnRefresh = (@escaping () -> Void) -> Void
     
     var refreshCallback: OnRefresh
-    var indicatorView: IndicatorView
-    var refreshingView: RefreshingView
+    var refreshView: RefreshView
     var startRefreshingOffset: CGFloat = 64
     var content: Content
     
@@ -26,22 +25,19 @@ public struct RefreshableScrollView<Content: View, IndicatorView: View, Refreshi
     @Namespace private var reloadNamespace
     
     public init(refreshCallback: @escaping OnRefresh,
-                indicatorView: IndicatorView,
-                refreshingView: RefreshingView,
+                refreshView: RefreshView,
                 startRefreshingOffset: CGFloat = 64,
                 @ViewBuilder content: () -> Content) {
         self.refreshCallback = refreshCallback
-        self.indicatorView = indicatorView
-        self.refreshingView = refreshingView
+        self.refreshView = refreshView
         self.startRefreshingOffset = startRefreshingOffset
         self.content = content()
     }
     
     public var body: some View {
         ZStack(alignment: .top) {
-            PullToRefreshView(refreshState: refreshState,
-                              indicatorView: indicatorView,
-                              refreshingView: refreshingView)
+            refreshView
+                .environment(\.pullToRefreshState, refreshState)
                 .frame(height: startRefreshingOffset)
                 .matchedGeometryEffect(id: "reloadIndicator", in: reloadNamespace, properties: .position, anchor: .bottom, isSource: refreshState == .refreshing)
                 .matchedGeometryEffect(id: "scrollTop", in: reloadNamespace, properties: .position, anchor: .bottom, isSource: false)
@@ -98,17 +94,18 @@ extension RefreshableScrollView {
     public init(refreshCallback: @escaping OnRefresh,
                 startRefreshingOffset: CGFloat = 64,
                 @ViewBuilder content: () -> Content)
-    where IndicatorView == PullToRefreshDefaults.DefaultIndicatorView,
-    RefreshingView == PullToRefreshDefaults.DefaultRefreshingView {
+    where RefreshView == PullToRefreshView<PullToRefreshDefaults.DefaultIndicatorView,
+                                          PullToRefreshDefaults.DefaultRefreshingView> {
         self.init(
                 refreshCallback: refreshCallback,
-                indicatorView: PullToRefreshDefaults.defaultIndicatorView,
-                refreshingView: PullToRefreshDefaults.defaultRefreshingView,
+                refreshView: PullToRefreshView(),
                 startRefreshingOffset: startRefreshingOffset,
                 content: content
         )
     }
 }
+
+// MARK: - Previews
 
 #if DEBUG
 
